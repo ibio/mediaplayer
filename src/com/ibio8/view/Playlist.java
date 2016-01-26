@@ -42,11 +42,17 @@ public class Playlist extends JPanel {
 		
 		DefaultComboBoxModel<String> driveList = new DefaultComboBoxModel<String>();
 		driveList.addElement("Select Drive");
+		String systemDrive = "/";
 		for(File path : getAllDrives()){
 	   		//System.out.println("Drive Name: " + path.getAbsolutePath());
 	   		//to eliminate a large search of system files
-	   		if(path.getAbsolutePath().startsWith(System.getenv("SystemDrive"))){
+	   		if(System.getenv("SystemDrive") != null){
+	   			systemDrive = System.getenv("SystemDrive");
+	   		}
+			if(path.getAbsolutePath().startsWith(systemDrive)){
 	   			driveList.addElement(System.getProperty("user.home"));
+	   			//to eliminate a mass search on Mac only 
+	   			driveList.addElement(System.getProperty("user.home") + "/Documents");
 //	   			System.out.println(System.getProperty("user.home"));
 	   		}else{
 	   			driveList.addElement(path.getAbsolutePath());
