@@ -58,21 +58,8 @@ public class Playlist extends JPanel {
 	   			driveList.addElement(path.getAbsolutePath());
 	   		}
 	   	}
-		JComboBox<String> drives = new JComboBox<String>(driveList) {
-			private static final long serialVersionUID = 1L;
-            /** 
-             * @inherited <p>
-             */
-            @Override
-            public Dimension getMaximumSize() {
-                Dimension max = super.getMaximumSize();
-                max.height = this.getPreferredSize().height;
-                return max;
-            }
-
-        };
-        
-		//drives.setMaximumSize(new Dimension(120, 28));
+		JComboBox<String> drives = new JComboBox<String>(driveList);
+		drives.setMaximumSize(new Dimension(150, 28));
 		
 //		comboBoxPane.setPreferredSize(new Dimension(100, 50));
 		//driveList.setSelectedIndex(4);
@@ -100,7 +87,7 @@ public class Playlist extends JPanel {
         
         this.add(buttonPane);
         this.add(listScroller);
-        //this.setPreferredSize(new Dimension(250, 400));
+        this.setPreferredSize(new Dimension(250, 400));
 	}
 	
 	public void createList(List<TrackVO> list){
