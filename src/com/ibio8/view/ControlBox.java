@@ -47,7 +47,7 @@ public class ControlBox extends JPanel {
         //progress.setMinorTickSpacing(1);
         //progress.setPaintTicks(true);
         //progress.setPaintLabels(true);
-        
+
         _btnPlayPause.addActionListener(new ActionListener(){
           public void actionPerformed(ActionEvent e){
             // display/center the jdialog when the button is pressed
@@ -70,7 +70,7 @@ public class ControlBox extends JPanel {
         this.add(buttonPane);
         this.add(progress);
         
-        this.setPreferredSize(new Dimension(300, 100));
+        //this.setPreferredSize(new Dimension(300, 100));
 	}
 	
 	public void setPlayPause(boolean flag){
