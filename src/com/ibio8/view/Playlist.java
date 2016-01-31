@@ -59,7 +59,7 @@ public class Playlist extends JPanel {
 	   		}
 	   	}
 		JComboBox<String> drives = new JComboBox<String>(driveList);
-		drives.setMaximumSize(new Dimension(150, 28));
+		//drives.setMaximumSize(new Dimension(150, 28));
 		
 //		comboBoxPane.setPreferredSize(new Dimension(100, 50));
 		//driveList.setSelectedIndex(4);
@@ -87,7 +87,7 @@ public class Playlist extends JPanel {
         
         this.add(buttonPane);
         this.add(listScroller);
-        this.setPreferredSize(new Dimension(250, 400));
+        //this.setPreferredSize(new Dimension(250, 400));
 	}
 	
 	public void createList(List<TrackVO> list){
