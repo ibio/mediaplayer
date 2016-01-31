@@ -32,7 +32,7 @@ public class Canvas extends JFrame {
 		_showPane.setEditable(false);
 		_showPane.setContentType("text/html");
 		//editorPane.setBackground(Color.cyan);
-		_showPane.setPreferredSize(new Dimension(300, 290));
+		//_showPane.setPreferredSize(new Dimension(300, 290));
 //		try {
 //			editorPane.setPage(new URL("http://ibio.github.io"));			
 //		} catch (IOException e) {
