@@ -9,7 +9,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 public class AudioPlayer {
-	protected MediaPlayer _player;
+	private MediaPlayer _player;
 	
 	public void load(TrackVO track){
 		if(_player != null){
@@ -24,10 +24,10 @@ public class AudioPlayer {
 			//System.out.println(file.toURI().toString());
 			_player = new MediaPlayer(hit);
 			_player.setAutoPlay(true);
-			System.out.println(hit.getMetadata());
-			System.out.println(hit.getDuration());
-			System.out.println(hit.getMarkers());
-			System.out.println(hit.getTracks());
+			//System.out.println(hit.getMetadata());
+			//System.out.println(hit.getDuration());
+			//System.out.println(hit.getMarkers());
+			//System.out.println(hit.getTracks());
 		}
 	}
 	

@@ -17,7 +17,7 @@ public class GetData {
 		return load(track.title);
 	}
 	
-	static protected String load(String title){
+	static private String load(String title){
 		Document doc;
 		String keyword = FilenameUtils.removeExtension(title);
 		String result = null;
@@ -27,6 +27,7 @@ public class GetData {
 			//Find the first record.
 			Elements item = doc.select("ul.mw-search-results li").eq(0);
 			System.out.println("search -->" + keyword);
+			//System.out.println("result -->" + doc);
 			//Find the content of the first record.
 			if(!item.isEmpty()){
 				String href = item.select(".mw-search-result-heading a").attr("href");
@@ -47,7 +48,7 @@ public class GetData {
 	}
 	
 	/*
-	static protected String load(String title){
+	static private String load(String title){
 		URL url;
 		URLConnection connection;
 		BufferedReader input;

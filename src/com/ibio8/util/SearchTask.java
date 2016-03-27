@@ -14,9 +14,9 @@ import com.ibio8.model.vo.TrackVO;
 public class SearchTask implements Runnable {
    private Thread _thread;
    private String _threadName;
-   protected String _drive;
-   protected String _postfix;
-   protected boolean _quit = false;
+   private String _drive;
+   private String _postfix;
+   private boolean _quit = false;
    
    public SearchTask(String name, String drive, String postfix){
 	   _threadName = name;
@@ -46,7 +46,7 @@ public class SearchTask implements Runnable {
       }
    }
    
-   protected void search(String volume, String postfix){
+   private void search(String volume, String postfix){
 		File root = new File(volume);
 		List<TrackVO> list = new ArrayList<TrackVO>(); 
         //String postfix = "mp3";
@@ -58,9 +58,9 @@ public class SearchTask implements Runnable {
                 if(_quit){
                 	break;
                 }
-                System.out.println("Searching " + volume + " | " + file.getName());
+                //System.out.println("Searching " + volume + " | " + file.getName());
                 if (file.getName().toLowerCase().endsWith(postfix)){
-                	//System.out.println(file.getAbsolutePath());
+                	System.out.println(file.getAbsolutePath());
                 	list.add(new TrackVO(file.getName(), file.getAbsolutePath()));
                 }
             }

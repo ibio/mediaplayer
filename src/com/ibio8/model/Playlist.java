@@ -8,9 +8,9 @@ import com.ibio8.controller.Controller;
 import com.ibio8.model.vo.TrackVO;
 
 public class Playlist {
-	protected List<TrackVO> _list = new ArrayList<TrackVO>();
+	private List<TrackVO> _list = new ArrayList<TrackVO>();
 	//NOTICE: set default as -1 in order to fire it first time correctly
-	protected int _index = -1;
+	private int _index = -1;
 	
 	public void add(List<TrackVO> list){
 		_list.addAll(list);
@@ -40,7 +40,7 @@ public class Playlist {
 		_list.set(_index, track);
 	}
 	
-	protected void dispatchNewIndex(int index){
+	private void dispatchNewIndex(int index){
 		if(index != _index){
 			_index = index;
 			Controller.getInstance().changeCurrentTrack(_index, _list.get(_index));

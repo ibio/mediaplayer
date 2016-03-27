@@ -11,10 +11,10 @@ import com.ibio8.util.SearchTask;
 
 public class Controller {
 	static private volatile Controller _instance = null;
-	protected Canvas _canvas;
-	protected Playlist _playlist;
-	protected AudioPlayer _player;
-	protected SearchTask _task;
+	private Canvas _canvas;
+	private Playlist _playlist;
+	private AudioPlayer _player;
+	private SearchTask _task;
 	
 	public Controller(){
 		_playlist = new Playlist();
@@ -54,12 +54,14 @@ public class Controller {
 	}
 
 	//============= change view =============
-	public void initView(){
-		_canvas = new Canvas();
+	public void initView(Canvas canvas){
+		_canvas = canvas;
 	}
 	
 	public void refreshList(List<TrackVO> list){
+		System.out.println(1);
 		_canvas.buildTracks(list);
+		System.out.println(2);
 	}
 	
 	public void changeCurrentTrack(int index, TrackVO track){
