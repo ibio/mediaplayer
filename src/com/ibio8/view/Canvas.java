@@ -1,6 +1,7 @@
 package com.ibio8.view;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -73,6 +74,21 @@ public class Canvas extends Application {
 		//System.out.println("Working Directory = " + System.getProperty("user.dir"));
 		Controller.getInstance().search(System.getProperty("user.dir"));
     }
+    
+	/**
+	 *  Close down the application
+	 *  @see
+	 *   -- http://docs.oracle.com/javafx/2/api/javafx/application/Application.html#stop%28%29
+	 **/
+	@Override
+	public void stop(){
+		Controller.getInstance().shutdown();
+		Platform.exit();
+		
+	     //for( ScheduledExecutorService sched : activeExecutorServices ){
+	         //sched.shutdown();
+	     //}
+	 }
 	
 	public void showContent(String html){
 		//_showPane.setText(html);

@@ -28,7 +28,7 @@ public class GetData {
 			//Find the first record.
 			Elements item = doc.select("ul.mw-search-results li").eq(0);
 			System.out.println("search -->" + keyword);
-			System.out.println("result -->" + doc);
+			//System.out.println("result -->" + doc);
 			//Find the content of the first record.
 			if(!item.isEmpty()){
 				String href = item.select(".mw-search-result-heading a").attr("href");

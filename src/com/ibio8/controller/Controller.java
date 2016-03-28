@@ -66,6 +66,15 @@ public class Controller {
 	public Duration getPlayingTime(){
 		return _player.getPlayingTime();
 	}
+	
+	public void shutdown(){
+		if(_search != null){
+			_search.stop();
+		}
+		if(_showLyrics != null){
+			_showLyrics.stop();
+		}
+	}
 
 	//============= change view =============
 	public void initView(Canvas canvas){
