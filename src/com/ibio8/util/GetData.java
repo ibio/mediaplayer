@@ -24,10 +24,11 @@ public class GetData {
 		try {
 			keyword = URLEncoder.encode(keyword, "UTF-8");
 			doc = Jsoup.connect("https://en.wikipedia.org/w/index.php?search=" + keyword).get();
+			//doc = Jsoup.connect("https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=" + keyword).get();
 			//Find the first record.
 			Elements item = doc.select("ul.mw-search-results li").eq(0);
 			System.out.println("search -->" + keyword);
-			//System.out.println("result -->" + doc);
+			System.out.println("result -->" + doc);
 			//Find the content of the first record.
 			if(!item.isEmpty()){
 				String href = item.select(".mw-search-result-heading a").attr("href");

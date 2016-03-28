@@ -38,6 +38,11 @@ public class Canvas extends Application {
 	private ListView<String> _playlist;
 	private Button _btnPlayPause;
 	private int _lastIndex = -1;
+	private Text _up2Line;
+	private Text _upLine;
+	private Text _currentLine;
+	private Text _nextLine;
+	private Text _next2Line;
 	
 	public Canvas(){
 		Controller.getInstance().initView(this);
@@ -73,6 +78,30 @@ public class Canvas extends Application {
 		//_showPane.setText(html);
 	}
 	
+	public void showLyrics(List<String> list, int index){
+		if(list != null && index >= 0){
+			if(index - 2 >= 0){
+				_up2Line.setText(list.get(index - 2) + "\n");
+			}
+			if(index - 1 >= 0){
+				_upLine.setText(list.get(index - 1) + "\n");
+			}
+			_currentLine.setText(list.get(index) + "\n");
+			if(index + 1 < list.size()){
+				_nextLine.setText(list.get(index + 1) + "\n");
+			}
+			if(index + 2 < list.size()){
+				_next2Line.setText(list.get(index + 2) + "\n");
+			}
+		}else{
+			_up2Line.setText("");
+			_upLine.setText("");
+			_currentLine.setText("");
+			_nextLine.setText("");
+			_next2Line.setText("");
+		}
+	}
+	
 	public void buildTracks(List<TrackVO> list){
 		ArrayList<String> data = new ArrayList<String>();
 		for(TrackVO item : list){
@@ -98,7 +127,8 @@ public class Canvas extends Application {
         hbox.setStyle("-fx-background-color: #336699;");
         
         Button btnPrevious = new Button();
-        btnPrevious.setPrefSize(70, 20);
+        //btnPrevious.setPrefSize(70, 0);
+        btnPrevious.setStyle("-fx-background-radius: 5em; -fx-min-width: 70px; -fx-min-height: 35px; -fx-max-width: 70px; -fx-max-height: 35px;");
         btnPrevious.setText("◀ Prev");
         btnPrevious.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -109,8 +139,9 @@ public class Canvas extends Application {
         
         //
         _btnPlayPause = new Button();
-        _btnPlayPause.setPrefSize(80, 20);
+        //_btnPlayPause.setPrefSize(80, 20);
         _btnPlayPause.setText("Ready");
+        _btnPlayPause.setStyle("-fx-background-radius: 5em; -fx-min-width: 80px; -fx-min-height: 35px; -fx-max-width: 80px; -fx-max-height: 35px;");
         _btnPlayPause.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -124,7 +155,8 @@ public class Canvas extends Application {
         });
         
         Button btnNext = new Button();
-        btnNext.setPrefSize(70, 20);
+        //btnNext.setPrefSize(70, 30);
+        btnNext.setStyle("-fx-background-radius: 5em; -fx-min-width: 70px; -fx-min-height: 35px; -fx-max-width: 70px; -fx-max-height: 35px;");
         btnNext.setText("Next ▶");
         btnNext.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -156,7 +188,6 @@ public class Canvas extends Application {
             VBox.setMargin(options[i], new Insets(0, 0, 0, 8));
             vbox.getChildren().add(options[i]);
         }
-
         return vbox;
     }
     
@@ -203,16 +234,20 @@ public class Canvas extends Application {
         TextFlow flow = new TextFlow();
         flow.setTextAlignment(TextAlignment.CENTER);
         flow.setPrefWidth(350);
+        flow.setLineSpacing(10);
         
-        Text text0 = new Text("I just want to test how long a single line could be \n");
-        text0.setStyle("-fx-font-weight: normal");
-        Text text1 = new Text("Some Text \n");
-        text1.setStyle("-fx-font-weight: bold");
-        Text text2 = new Text("Some Text \n");
-        text2.setStyle("-fx-font-weight: normal");
+        _up2Line = new Text();
+        _up2Line.setStyle("-fx-font-weight: normal");
+        _upLine = new Text();
+        _upLine.setStyle("-fx-font-weight: normal");
+        _currentLine = new Text();
+        _currentLine.setStyle("-fx-font-weight: bold");
+        _nextLine = new Text();
+        _nextLine.setStyle("-fx-font-weight: normal");
+        _next2Line = new Text();
+        _next2Line.setStyle("-fx-font-weight: normal");
 
-        flow.getChildren().addAll(text0, text1, text2);
-        
+        flow.getChildren().addAll(_up2Line, _upLine, _currentLine, _nextLine, _next2Line);
         box.getChildren().add(flow); 
         return box;
     }

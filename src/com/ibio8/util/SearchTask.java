@@ -12,17 +12,16 @@ import com.ibio8.controller.Controller;
 import com.ibio8.model.vo.TrackVO;
 
 public class SearchTask implements Runnable {
-   private Thread _thread;
-   private String _threadName;
    private String _drive;
    private String _postfix;
    private boolean _quit = false;
    
    public SearchTask(String name, String drive, String postfix){
-	   _threadName = name;
 	   _drive = drive;
 	   _postfix = postfix;
-       //System.out.println("Creating " +  _threadName);
+	   Thread thread = new Thread(this, name);
+	   thread.start();
+	   System.out.println("Thread " +  name + " exiting.");
    }
    
    //see http://docs.oracle.com/javase/1.5.0/docs/guide/misc/threadPrimitiveDeprecation.html
@@ -35,15 +34,6 @@ public class SearchTask implements Runnable {
 	   //File p = new File("D:\\");
 	   //search(p.getAbsolutePath(), _postfix);
 	   search(_drive, _postfix);
-      System.out.println("Thread " +  _threadName + " exiting.");
-   }
-   
-   public void start(){
-      System.out.println("Starting " +  _threadName);
-      if (_thread == null){
-    	  _thread = new Thread(this, _threadName);
-    	  _thread.start();
-      }
    }
    
    private void search(String volume, String postfix){
@@ -60,8 +50,10 @@ public class SearchTask implements Runnable {
                 }
                 //System.out.println("Searching " + volume + " | " + file.getName());
                 if (file.getName().toLowerCase().endsWith(postfix)){
-                	System.out.println(file.getAbsolutePath());
-                	list.add(new TrackVO(file.getName(), file.getAbsolutePath()));
+                	String path = file.getAbsolutePath();
+                	System.out.println(path);
+                	String lrc = path.substring(0, path.lastIndexOf(".mp3")) + ".lrc";
+                	list.add(new TrackVO(file.getName(), lrc, path));
                 }
             }
         } catch (Exception e) {
