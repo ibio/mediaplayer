@@ -14,45 +14,33 @@ import com.ibio8.controller.Controller;
 
 import javafx.util.Duration;
 
-public class ShowLyricsTask implements Runnable{
-	private boolean _quit = false;
-	private String _input;
+public class ShowLyrics{
 	private List<String> _lyricsList;
 	private List<Duration> _timingList;
+	private int _lastIndex;
 	
-	public ShowLyricsTask(String name, String input){
-		_input = input;
-		Thread thread = new Thread(this, name);
-		thread.start();
-	}
-	   
-	//see http://docs.oracle.com/javase/1.5.0/docs/guide/misc/threadPrimitiveDeprecation.html
-	public void stop(){
-		_quit = true;
-	}
-	   
-	public void run(){
-		int lastIndex = -1;
+	public void start(String input){
 		System.out.println("start parse lyrics ==> ");
-		parse(_input);
-		while(!_quit){
-			Duration time = Controller.getInstance().getPlayingTime();
-			//System.out.println("time " + time);
-			//Since it uses greaterThan so the (i - 1) is the right current line.
-			//That's why here it starts from -1.
-			int index = -1;
-			if(time != null && _lyricsList != null){
-				for (Duration key : _timingList) {
-					if(key.greaterThanOrEqualTo(time)){
-						if(index != lastIndex){
-							//System.out.println(index + " | " + _lyricsList.get(index));
-							Controller.getInstance().showLyrics(_lyricsList, index);
-							lastIndex = index;
-						}
-						break;
+		_lastIndex = -1;
+		parse(input);
+	}
+	   
+	public void run(Duration time){
+		//System.out.println("time " + time);
+		//Since it uses greaterThan so the (i - 1) is the right current line.
+		//That's why here it starts from -1.
+		int index = -1;
+		if(time != null && _lyricsList != null){
+			for (Duration key : _timingList) {
+				if(key.greaterThanOrEqualTo(time)){
+					if(index != _lastIndex){
+						//System.out.println(index + " | " + _lyricsList.get(index));
+						Controller.getInstance().showLyrics(_lyricsList, index);
+						_lastIndex = index;
 					}
-					index++;
+					break;
 				}
+				index++;
 			}
 		}
 	}
@@ -82,7 +70,6 @@ public class ShowLyricsTask implements Runnable{
 				//System.out.println("Found a: " + m.group(0) + "|" + m.group(1) + "|" + m.group(2));
 				lines.add(mLine.group());
 			}
-			
 			_lyricsList = new ArrayList<String>();
 			_timingList = new ArrayList<Duration>();
 			Pattern regexTime = Pattern.compile("\\d{2}:\\d{2}\\.\\d{2}");

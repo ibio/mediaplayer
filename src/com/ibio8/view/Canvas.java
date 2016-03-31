@@ -2,6 +2,8 @@ package com.ibio8.view;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -12,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -29,6 +32,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,14 +40,17 @@ import com.ibio8.controller.Controller;
 import com.ibio8.model.vo.TrackVO;
 
 public class Canvas extends Application {
-	private ListView<String> _playlist;
-	private Button _btnPlayPause;
+	final private ListView<String> _playlist = new ListView<>();
+	final private Button _btnPlayPause = new Button();
+	final private Text _up2Line = new Text();
+	final private Text _upLine = new Text();
+	final private Text _currentLine = new Text();
+	final private Text _nextLine = new Text();
+	final private Text _next2Line = new Text();
+	final private Slider _progressBar = new Slider(0, 1, 0);
 	private int _lastIndex = -1;
-	private Text _up2Line;
-	private Text _upLine;
-	private Text _currentLine;
-	private Text _nextLine;
-	private Text _next2Line;
+	private float _currentProgress;
+	private boolean _lockSlider = false;
 	
 	public Canvas(){
 		Controller.getInstance().initView(this);
@@ -136,9 +143,18 @@ public class Canvas extends Application {
 		_btnPlayPause.setText("Pause");
 	}
 	
+	public void updateProgress(Duration playingTime, Duration totalTime){
+		_currentProgress = (float) (playingTime.toSeconds() / totalTime.toSeconds());
+		//TODO this part still has a problem to distinguish if it's manually changed value.
+		if(!_lockSlider){
+			_progressBar.setValue(_currentProgress);
+		}
+	}
+	
 	private HBox createControlBox(){
         HBox hbox = new HBox();
         hbox.setPadding(new Insets(15, 12, 15, 12));
+        hbox.setAlignment(Pos.CENTER);
         hbox.setSpacing(10);
         hbox.setStyle("-fx-background-color: #336699;");
         
@@ -153,11 +169,9 @@ public class Canvas extends Application {
             }
         });
         
-        //
-        _btnPlayPause = new Button();
         //_btnPlayPause.setPrefSize(80, 20);
         _btnPlayPause.setText("Ready");
-        _btnPlayPause.setStyle("-fx-background-radius: 5em; -fx-min-width: 80px; -fx-min-height: 35px; -fx-max-width: 80px; -fx-max-height: 35px;");
+        _btnPlayPause.setStyle("-fx-background-radius: 5em; -fx-min-width: 100px; -fx-min-height: 55px; -fx-max-width: 80px; -fx-max-height: 35px;");
         _btnPlayPause.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -180,8 +194,21 @@ public class Canvas extends Application {
             	Controller.getInstance().next();
             }
         });
-     
-        hbox.getChildren().addAll(btnPrevious, _btnPlayPause, btnNext);
+        
+        //progress bar
+        _progressBar.setPrefWidth(200);
+        _progressBar.valueProperty().addListener(new ChangeListener<Number>() {
+            public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
+            	float value = observableValue.getValue().floatValue();
+            	_lockSlider = (_currentProgress != value);
+            	//System.out.println("_lockSlider " + _lockSlider);
+            	if(_lockSlider){
+            		Controller.getInstance().seek(value);
+                	_lockSlider = false;
+            	}
+            }
+        });
+        hbox.getChildren().addAll(btnPrevious, _btnPlayPause, btnNext, _progressBar);
         return hbox;
     }
     
@@ -252,15 +279,10 @@ public class Canvas extends Application {
         flow.setPrefWidth(350);
         flow.setLineSpacing(10);
         
-        _up2Line = new Text();
         _up2Line.setStyle("-fx-font-weight: normal");
-        _upLine = new Text();
         _upLine.setStyle("-fx-font-weight: normal");
-        _currentLine = new Text();
         _currentLine.setStyle("-fx-font-weight: bold");
-        _nextLine = new Text();
         _nextLine.setStyle("-fx-font-weight: normal");
-        _next2Line = new Text();
         _next2Line.setStyle("-fx-font-weight: normal");
 
         flow.getChildren().addAll(_up2Line, _upLine, _currentLine, _nextLine, _next2Line);
@@ -271,7 +293,7 @@ public class Canvas extends Application {
     private VBox createPlaylist(){
     	VBox box = new VBox();
     	box.setPrefWidth(200);
-    	_playlist = new ListView<>();
+    	//
     	_playlist.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {

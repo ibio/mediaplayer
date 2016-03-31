@@ -4,13 +4,14 @@ import java.util.List;
 
 import com.ibio8.view.Canvas;
 
+import javafx.event.EventHandler;
 import javafx.util.Duration;
 
 import com.ibio8.core.AudioPlayer;
+import com.ibio8.event.AudioEvent;
 import com.ibio8.model.Playlist;
 import com.ibio8.model.vo.TrackVO;
-import com.ibio8.util.GetData;
-import com.ibio8.util.ShowLyricsTask;
+import com.ibio8.util.ShowLyrics;
 import com.ibio8.util.SearchTask;
 
 public class Controller {
@@ -19,11 +20,27 @@ public class Controller {
 	private Playlist _playlist;
 	private AudioPlayer _player;
 	private SearchTask _search;
-	private ShowLyricsTask _showLyrics;
+	private ShowLyrics _showLyrics;
 	
 	public Controller(){
 		_playlist = new Playlist();
 		_player = new AudioPlayer();
+		_showLyrics = new ShowLyrics();
+		_player.onHeadUpedated(new EventHandler<AudioEvent>() {
+            @Override
+            public void handle(AudioEvent e) {
+            	//System.out.println("event" + e.playingTime);
+            	if(e.playingTime != null){
+            		_showLyrics.run(e.playingTime);
+            	}
+            	if(e.playingTime != null && e.totalTime != null){
+            		updateProgress(e.playingTime, e.totalTime);
+            	}
+            	if(e.completed){
+            		next();
+            	}
+            }
+        });
 	}
 	
 	static public Controller getInstance(){
@@ -46,13 +63,10 @@ public class Controller {
 	
 	public void loadTrack(TrackVO track){
 		_player.load(track);
-		if(_showLyrics != null){
-			_showLyrics.stop();
-		}
 		_canvas.showLyrics(null, -1);
-		String input = ShowLyricsTask.load(track.lrc);
-		_showLyrics = new ShowLyricsTask("show-lyrics-task", input);
-		GetData.find(track);
+		String input = ShowLyrics.load(track.lrc);
+		_showLyrics.start(input);
+		//GetData.find(track);
 	}
 	
 	public void playPause(){
@@ -63,16 +77,13 @@ public class Controller {
 		}
 	}
 	
-	public Duration getPlayingTime(){
-		return _player.getPlayingTime();
+	public void seek(float ratio){
+		_player.seek(ratio);
 	}
 	
 	public void shutdown(){
 		if(_search != null){
 			_search.stop();
-		}
-		if(_showLyrics != null){
-			_showLyrics.stop();
 		}
 	}
 
@@ -93,6 +104,10 @@ public class Controller {
 		_canvas.showLyrics(list, index);
 	}
 	
+	public void updateProgress(Duration playingTime, Duration totalTime){
+		_canvas.updateProgress(playingTime, totalTime);
+	}
+	
 	//============= change model =============
 	public void addTracks(List<TrackVO> list){
 		_playlist.add(list);
@@ -108,9 +123,5 @@ public class Controller {
 	
 	public void next(){
 		_playlist.next();
-	}
-	
-	public void showPlayingTime(Duration value){
-		_player.getPlayingTime();
 	}
 }
