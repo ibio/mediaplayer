@@ -17,7 +17,7 @@ public class GetData {
 		return load(track.title);
 	}
 	
-	static private String load(String title){
+	static public String load(String title){
 		Document doc;
 		String keyword = FilenameUtils.removeExtension(title);
 		String result = null;
@@ -37,7 +37,8 @@ public class GetData {
 				//System.out.println(doc);
 				Elements content = doc.select("#mw-content-text");
 				Elements intro = content.select("p").eq(0);
-				result = intro.html();
+				//result = intro.html();
+				result = intro.text();
 			}
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();

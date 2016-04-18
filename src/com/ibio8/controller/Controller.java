@@ -12,6 +12,7 @@ import com.ibio8.event.AudioEvent;
 import com.ibio8.model.Playlist;
 import com.ibio8.model.vo.TrackVO;
 import com.ibio8.util.ShowLyrics;
+import com.ibio8.util.GetData;
 import com.ibio8.util.SearchTask;
 
 public class Controller {
@@ -38,6 +39,11 @@ public class Controller {
             	}
             	if(e.completed){
             		next();
+            	}
+            	//search for artist
+            	if(e.artist != null){
+            		//System.out.println(e.artist + "---");
+            		_canvas.showContent(GetData.load(e.artist));
             	}
             }
         });
@@ -66,7 +72,6 @@ public class Controller {
 		_canvas.showLyrics(null, -1);
 		String input = ShowLyrics.load(track.lrc);
 		_showLyrics.start(input);
-		//GetData.find(track);
 	}
 	
 	public void playPause(){

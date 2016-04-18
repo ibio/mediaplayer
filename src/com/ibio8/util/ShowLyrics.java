@@ -20,7 +20,7 @@ public class ShowLyrics{
 	private int _lastIndex;
 	
 	public void start(String input){
-		System.out.println("start parse lyrics ==> ");
+		System.out.println("start parse lyrics ...");
 		_lastIndex = -1;
 		parse(input);
 	}

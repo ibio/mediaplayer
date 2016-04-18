@@ -1,6 +1,7 @@
 package com.ibio8.core;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.ibio8.event.AudioEvent;
@@ -32,10 +33,15 @@ public class AudioPlayer {
 		        @Override
 		        public void run(){
 					//System.out.println(hit.getTracks());
-//		            System.out.println("total duration" + _player.getTotalDuration());
+		            //System.out.println("total duration" + _player.getTotalDuration());
 		            // display media's metadata
+		        	Map<String, Object> map = new HashMap<String, Object>();
 		            for (Map.Entry<String, Object> entry : hit.getMetadata().entrySet()){
-		                System.out.println(entry.getKey() + ": " + entry.getValue());
+		                //System.out.println(entry.getKey() + ": " + entry.getValue());
+		            	map.put(entry.getKey(), entry.getValue());
+		            }
+		            if(_hAudioEvent != null){
+		            	_hAudioEvent.handle(new AudioEvent(null, null, false, (String)map.get("artist")));
 		            }
 		            // play if you want
 		            //_player.play();
@@ -43,7 +49,7 @@ public class AudioPlayer {
 		    });
 			_player.currentTimeProperty().addListener((observableValue, oldDuration, newDuration) -> {
 				if(_hAudioEvent != null){
-					_hAudioEvent.handle(new AudioEvent(observableValue.getValue(), _player.getTotalDuration(), false));
+					_hAudioEvent.handle(new AudioEvent(observableValue.getValue(), _player.getTotalDuration(), false, null));
 				}
 				//System.out.println("current:" + _playingTime);
 				//System.out.println("Player:" + observableValue + " | Changed from playing at: " + oldDuration + " to play at " + newDuration);
@@ -51,7 +57,7 @@ public class AudioPlayer {
 			_player.setOnEndOfMedia(new Runnable(){
 		        @Override public void run() {
 		        	//System.out.println("On Completed");
-		        	_hAudioEvent.handle(new AudioEvent(null, null, true));
+		        	_hAudioEvent.handle(new AudioEvent(null, null, true, null));
 		        }
 		      });
 		}

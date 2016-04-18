@@ -12,9 +12,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ListView;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -33,7 +35,9 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
+import java.awt.Desktop;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import com.ibio8.controller.Controller;
@@ -42,6 +46,7 @@ import com.ibio8.model.vo.TrackVO;
 public class Canvas extends Application {
 	final private ListView<String> _playlist = new ListView<>();
 	final private Button _btnPlayPause = new Button();
+	final private Text _info = new Text();
 	final private Text _up2Line = new Text();
 	final private Text _upLine = new Text();
 	final private Text _currentLine = new Text();
@@ -51,6 +56,8 @@ public class Canvas extends Application {
 	private int _lastIndex = -1;
 	private float _currentProgress;
 	private boolean _lockSlider = false;
+	private String _infoText;
+	private boolean _showLyrics = true;
 	
 	public Canvas(){
 		Controller.getInstance().initView(this);
@@ -68,7 +75,7 @@ public class Canvas extends Application {
         addStackPane(hbox);
         border.setTop(hbox);
         border.setLeft(createMenuBox());
-        border.setCenter(createLyrics());
+        border.setCenter(createContent());
         border.setRight(createPlaylist());
         
         StackPane root = new StackPane();
@@ -97,12 +104,15 @@ public class Canvas extends Application {
 	     //}
 	 }
 	
-	public void showContent(String html){
-		//_showPane.setText(html);
+	public void showContent(String text){
+		_infoText = text;
+		if(!_showLyrics){
+			_info.setText(_infoText);
+		}
 	}
 	
 	public void showLyrics(List<String> list, int index){
-		if(list != null && index >= 0){
+		if(_showLyrics && list != null && index >= 0){
 			if(index - 2 >= 0){
 				_up2Line.setText(list.get(index - 2) + "\n");
 			}
@@ -220,14 +230,37 @@ public class Canvas extends Application {
         Text title = new Text("Menu");
         title.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         vbox.getChildren().add(title);
-
-        Hyperlink options[] = new Hyperlink[] {
-            new Hyperlink("Lyrics"),
-            new Hyperlink("Info"),
-            new Hyperlink("Distribution"),
-            new Hyperlink("Costs")};
-
-        for (int i=0; i<4; i++) {
+        
+        //
+        final ToggleGroup group = new ToggleGroup();
+        RadioButton rb1 = new RadioButton("Lyrics");
+        rb1.setToggleGroup(group);
+        rb1.setUserData("lyrics");
+        //default shows lyrics
+        rb1.setSelected(true);
+        RadioButton rb2 = new RadioButton("Info");
+        rb2.setToggleGroup(group);
+        rb2.setUserData("info");
+        RadioButton options[] = new RadioButton[] {rb1, rb2};
+        //radio group click handler
+        group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+            public void changed(ObservableValue<? extends Toggle> ov, Toggle old_toggle, Toggle new_toggle) {
+              if (group.getSelectedToggle() != null) {
+                //System.out.println(group.getSelectedToggle().getUserData().toString());
+                switch(group.getSelectedToggle().getUserData().toString()){
+                	case "lyrics":
+                		_info.setText("");
+                		_showLyrics = true;
+                		break;
+                	case "info":
+                		_info.setText(_infoText);
+                		_showLyrics = false;
+                		break;
+                }
+              }
+            }
+          });
+        for (int i = 0; i < options.length; i++) {
             VBox.setMargin(options[i], new Insets(0, 0, 0, 8));
             vbox.getChildren().add(options[i]);
         }
@@ -257,7 +290,22 @@ public class Canvas extends Application {
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
+                //System.out.println("Open a URL");
+            	URI uri = null;
+				try {
+					uri = new URI("http://ibio.github.io");
+				} catch (URISyntaxException e1) {
+					e1.printStackTrace();
+				}
+            	Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+                if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+                    try {
+                        desktop.browse(uri);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                
             }
         });
         
@@ -269,7 +317,7 @@ public class Canvas extends Application {
         HBox.setHgrow(stack, Priority.ALWAYS);    // Give stack any extra space
     }
     
-    private VBox createLyrics(){
+    private VBox createContent(){
     	VBox box = new VBox();
     	box.setAlignment(Pos.CENTER);
         box.setPadding(new Insets(0, 10, 0, 10));
@@ -285,7 +333,8 @@ public class Canvas extends Application {
         _nextLine.setStyle("-fx-font-weight: normal");
         _next2Line.setStyle("-fx-font-weight: normal");
 
-        flow.getChildren().addAll(_up2Line, _upLine, _currentLine, _nextLine, _next2Line);
+        flow.getChildren().addAll(_info, _up2Line, _upLine, _currentLine, _nextLine, _next2Line);
+        //flow.getChildren().add(new Text("\"La La La\" is a single by British producer Naughty Boy, featuring vocals from Sam Smith. It was released on 18 May 2013 as the second single from Naughty Boy's debut album Hotel Cabana (2013) and the deluxe version of Smith's debut album In the Lonely Hour. The track reached number one in 26 countries, including on the UK Singles Chart."));
         box.getChildren().add(flow); 
         return box;
     }
