@@ -1,9 +1,11 @@
 package com.ibio8.controller;
 
 import java.util.List;
-
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import com.ibio8.view.Canvas;
 
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.util.Duration;
 
@@ -20,8 +22,8 @@ public class Controller {
 	private Canvas _canvas;
 	private Playlist _playlist;
 	private AudioPlayer _player;
-	private SearchTask _search;
 	private ShowLyrics _showLyrics;
+	private ExecutorService _search;
 	
 	public Controller(){
 		_playlist = new Playlist();
@@ -62,9 +64,10 @@ public class Controller {
 	
 	public void search(String drive){
 		if(_search != null){
-			_search.stop();
+			_search.shutdownNow();
 		}
-		_search = new SearchTask("search-task", drive, "mp3");
+		_search = Executors.newFixedThreadPool(1);
+		_search.execute(new SearchTask(drive, "mp3"));
 	}
 	
 	public void loadTrack(TrackVO track){
@@ -75,6 +78,7 @@ public class Controller {
 	}
 	
 	public void playPause(){
+		//search(System.getProperty("user.dir"));
 		if(_player.isPlay()){
 			_player.pause();
 		}else{
@@ -87,9 +91,7 @@ public class Controller {
 	}
 	
 	public void shutdown(){
-		if(_search != null){
-			_search.stop();
-		}
+		_search.shutdownNow();
 	}
 
 	//============= change view =============
@@ -114,8 +116,14 @@ public class Controller {
 	}
 	
 	//============= change model =============
+	//from search task thread
 	public void addTracks(List<TrackVO> list){
-		_playlist.add(list);
+		Platform.runLater(new Runnable() {
+		    @Override
+		    public void run() {
+		    	_playlist.add(list);
+		    }
+		});
 	}
 	
 	public void change(int index){

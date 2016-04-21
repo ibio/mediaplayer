@@ -14,38 +14,36 @@ import com.ibio8.model.vo.TrackVO;
 public class SearchTask implements Runnable {
    private String _drive;
    private String _postfix;
-   private boolean _quit = false;
    
-   public SearchTask(String name, String drive, String postfix){
+   public SearchTask(String drive, String postfix){
 	   _drive = drive;
 	   _postfix = postfix;
-	   Thread thread = new Thread(this, name);
-	   thread.start();
-	   System.out.println("Thread " +  name + " exiting.");
    }
    
    //see http://docs.oracle.com/javase/1.5.0/docs/guide/misc/threadPrimitiveDeprecation.html
+   //right now use: ExecutorService => shutdownNow();
    public void stop(){
-	   _quit = true;
+	   //_quit = true;
    }
    
+   @Override
    public void run(){
-	   //System.out.println("Running " +  _threadName);
-	   //File p = new File("D:\\");
-	   //search(p.getAbsolutePath(), _postfix);
+	   System.out.println("Running " +  Thread.currentThread().getName());
+	   //search(new File("D:\\").getAbsolutePath(), _postfix);
 	   search(_drive, _postfix);
    }
    
    private void search(String volume, String postfix){
 		File root = new File(volume);
-		List<TrackVO> list = new ArrayList<TrackVO>(); 
+		List<TrackVO> list = new ArrayList<TrackVO>();
         //String postfix = "mp3";
         try {
             boolean recursive = true;
             Collection<File> files = FileUtils.listFiles(root, null, recursive);
             for (Iterator<File> iterator = files.iterator(); iterator.hasNext();) {
                 File file = (File) iterator.next();
-                if(_quit){
+                //System.out.println("isInterrupted " + Thread.currentThread().isInterrupted());
+                if(Thread.currentThread().isInterrupted()){
                 	break;
                 }
                 //System.out.println("Searching " + volume + " | " + file.getName());
